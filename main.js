@@ -27,8 +27,8 @@ define(function (require, exports, module) {
 	var hidden = false;
 	//var dragging = false;
 	var contentCssRight = 0;
-	var resizeInterval;
-	var editorHeight = 0;
+	//var resizeInterval;
+	//var editorHeight = 0;
 	
 	enabled = (enabled !== undefined ? enabled : true);
 	
@@ -55,7 +55,7 @@ define(function (require, exports, module) {
 		enabled = true;
 		
 		contentCssRight = parseInt($('.main-view .content').css('right'), 10);
-		$('.main-view').append('<div id="brackets-code-outline"></div>');
+		$('.main-view').append('<div id="brackets-code-outline"><header>Code Outline</header><nav></nav></div>');
 		//$('.main-view').append('<div id="wdMinimap"><div class="visible-box"></div><pre></pre></div>');
 		$('.main-view .content').css('right', OUTLINE_WIDTH + contentCssRight + 'px');		
 		/*updateListeners();
@@ -70,7 +70,7 @@ define(function (require, exports, module) {
 			}
 			if ($('#wdMinimap').css('background-color') != $('.CodeMirror').css('background-color')) setThemeColors();
 		}, 500);*/
-		if ($('#wdMinimap').css('background-color') != $('.CodeMirror').css('background-color')) {
+		if ($('#brackets-code-outline').css('background-color') != $('.CodeMirror').css('background-color')) {
             setThemeColors();
         }
 		
@@ -118,7 +118,7 @@ define(function (require, exports, module) {
 	
 	// add the menu item
 	CommandManager.register('Show Code Outline', NAME + 'showOutline', toggle);
-	menu.addMenuItem(NAME + 'showOutline');
+	menu.addMenuItem(NAME + 'showOutline', 'Ctrl-Alt-Shift-O');
 	
 	if (enabled) {
         enable();

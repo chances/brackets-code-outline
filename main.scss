@@ -1,0 +1,30 @@
+#brackets-code-outline {
+	position: absolute;
+	height: 100%;
+	top: 0;
+	right: 30px;
+	width: 250px;
+	overflow: auto;
+	background-color: #f3f3f3;
+	border: 0 solid #e5e5e5;
+	border-left-width: 1px;
+	/*box-shadow: inset 2px 0 6px #ececec;*/
+	box-sizing: border-box;
+	font-size: 100%;
+	header {
+        padding: 0.5em 0.75em;
+        font-size: 1.5em;
+        font-weight: bold;
+        border-bottom: solid 1px #e5e5e5;
+    }
+    nav {
+        padding: 0.5em;
+        ul {
+            padding: 0;
+            margin: 0;
+            li {
+                
+            }
+        }
+    }
+}
