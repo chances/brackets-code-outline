@@ -1,0 +1,13 @@
+#brackets-code-outline {
+	position: absolute;
+	height: 100%;
+	top: 0;
+	right: 30px;
+	width: 250px;
+	overflow: auto;
+	background-color: #f3f3f3;
+	border: 0 solid #e5e5e5;
+	border-left-width: 1px;
+	box-shadow: inset 2px 0 6px #ececec;
+	box-sizing: border-box;
+}
