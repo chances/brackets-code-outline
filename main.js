@@ -27,7 +27,7 @@ define(function (require, exports, module) {
 	var hidden = false;
 	//var dragging = false;
 	var contentCssRight = 0;
-	//var resizeInterval;
+	var resizeInterval;
 	//var editorHeight = 0;
 	
 	enabled = (enabled !== undefined ? enabled : true);
@@ -57,25 +57,91 @@ define(function (require, exports, module) {
 		contentCssRight = parseInt($('.main-view .content').css('right'), 10);
 		$('.main-view').append('<div id="brackets-code-outline"><header>Code Outline</header><nav></nav></div>');
 		//$('.main-view').append('<div id="wdMinimap"><div class="visible-box"></div><pre></pre></div>');
-		$('.main-view .content').css('right', OUTLINE_WIDTH + contentCssRight + 'px');		
-		/*updateListeners();
-		documentSwitch();*/
+		$('.main-view .content').css('right', OUTLINE_WIDTH + contentCssRight + 'px');
+		updateListeners();
+		documentSwitch();
 		
-		/*resizeInterval = setInterval(function() {
-			if (currentEditor) {
+		resizeInterval = setInterval(function() {
+			/*if (currentEditor) {
 				if (editorHeight != $('#editor-holder').height()) {
 					editorResize();
 					editorHeight = $('#editor-holder').height();
 				}
 			}
-			if ($('#wdMinimap').css('background-color') != $('.CodeMirror').css('background-color')) setThemeColors();
-		}, 500);*/
-		if ($('#brackets-code-outline').css('background-color') != $('.CodeMirror').css('background-color')) {
-            setThemeColors();
-        }
+			if ($('#wdMinimap').css('background-color') != $('.CodeMirror').css('background-color')) setThemeColors();*/
+			if ($('#brackets-code-outline').css('background-color') != $('.CodeMirror').css('background-color')) {
+				setThemeColors();
+			}
+		}, 500);
 		
 		preferences.setValue('enabled', true);	
-		CommandManager.get(NAME + 'showOutline').setChecked(true);		
+		CommandManager.get(NAME + 'showOutline').setChecked(true);
+	}
+	
+	// update the listeners
+	function updateListeners() {
+		if (enabled) {
+			/*$(DocumentManager).on('currentDocumentChange.wdMinimap', documentSwitch);
+			$(DocumentManager).on('workingSetRemove.wdMinimap', documentClose);
+			$('#wdMinimap pre, #wdMinimap .visible-box').on('mousedown.wdMinimap', visibleBoxMouseDown);
+			$(document).on('mouseup.wdMinimap', visibleBoxMouseUp);
+			$('#wdMinimap pre, #wdMinimap .visible-box').on('mousemove.wdMinimap', visibleBoxMouseMove);*/
+			$(DocumentManager).on('currentDocumentChange.bracketsCodeOutline', documentSwitch);
+			$(DocumentManager).on('workingSetRemove.bracketsCodeOutline', documentClose);
+		} else {
+			if (currentEditor) {
+                //$(currentEditor.document).off('.wdMinimap');
+                $(currentEditor.document).off('.bracketsCodeOutline');
+            }
+			/*$(DocumentManager).off('.wdMinimap');
+			$(document).off('.wdMinimap');*/
+			$(DocumentManager).off('.bracketsCodeOutline');
+			$(document).off('.bracketsCodeOutline');
+		}
+	}
+	
+	// handle a document being swapped
+	function documentSwitch() {
+		if (hidden) {
+            show();
+        }
+		
+		if (currentEditor) {
+			//$(currentEditor.document).off('.wdMinimap');
+			$(currentEditor.document).off('.bracketsCodeOutline');
+		}
+		
+		currentEditor = EditorManager.getCurrentFullEditor();
+		//currentEditor.document.file.name << file
+		if (!currentEditor) { 
+			//$('#wdMinimap').hide();
+			$('#brackets-code-outline').hide();
+			return;
+		}
+		else {
+			//$('#wdMinimap').show();
+			$('#brackets-code-outline').show();
+		}
+		
+		//$('#wdMinimap pre').css('top', 0);
+		documentEdit();
+		
+		//$(currentEditor.document).on('change.wdMinimap', documentEdit);
+		$(currentEditor.document).on('change.bracketsCodeOutline', documentEdit);
+		//$(currentEditor).on('scroll.wdMinimap', editorScroll);
+	}
+	
+	// get the current document
+	function documentEdit() {
+		//$('#wdMinimap pre').text(currentEditor.document.getText());
+		//editorScroll();
+	}
+	
+	// handle a document being closed
+	function documentClose() {
+		if (DocumentManager.getWorkingSet().length == 0) {
+            hide();
+        }
 	}
 	
 	// disable the extension
@@ -112,7 +178,7 @@ define(function (require, exports, module) {
         $('#brackets-code-outline').css({
             'background-color': editor.css('background-color'),
             'color': editor.css('color')
-        });
+		});
 		//pre.css('color', editor.css('color'));
 	}
 	
