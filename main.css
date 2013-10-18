@@ -10,15 +10,13 @@
   background-color: #f3f3f3;
   border: 0 solid #e5e5e5;
   border-left-width: 1px;
-  border-right-width: 1px;
-  /*box-shadow: inset 2px 0 6px #ececec;*/
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   font-size: 100%;
 }
 
-/* line 14, main.scss */
+/* line 13, main.scss */
 
 #brackets-code-outline header {
   padding: 0.5em 0.75em;
@@ -27,13 +25,13 @@
   border-bottom: solid 1px #e5e5e5;
 }
 
-/* line 20, main.scss */
+/* line 19, main.scss */
 
 #brackets-code-outline nav {
   padding: 0.5em;
 }
 
-/* line 22, main.scss */
+/* line 21, main.scss */
 
 #brackets-code-outline nav ul {
   padding: 0;
