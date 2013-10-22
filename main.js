@@ -8,7 +8,7 @@
  * code files. See the README for the supported file types.
  */
 
-define(function (require, exports, module) {
+define(['require', 'exports', 'module', 'languages/css_outliner', 'languages/js_outliner', 'languages/php_outliner'], function (require, exports, module, css_outliner, js_outliner, php_outline) {
     "use strict";
     
     var NAME = 'willsteinmetz.bracketsCodeOutline',
@@ -113,7 +113,7 @@ define(function (require, exports, module) {
 		} else {
 			$('#brackets-code-outline').show();
 		}
-		
+		console.log(currentEditor);
 		documentEdit();
 		
 		$(currentEditor.document).on('change.bracketsCodeOutline', documentEdit);
@@ -125,10 +125,19 @@ define(function (require, exports, module) {
 	function documentEdit() {
 		var file = currentEditor.document.file.name,
 			type = file.substr(file.lastIndexOf('.') + 1);
-		if (type && (type != currentType)) {
+		if (type && (typeof type != 'undefined') && (type != null) && (type != currentType)) {
             currentType = type;
-            outliner = require('languages/' + type + '.outliner.js');
+            try {
+	            outliner = require('./languages/' + type + '_outliner');
+	        } catch(e) {
+		        console.log(e);
+		        console.log("couldn't load ./languages/" + type + '_outliner');
+		        return;
+	        }
         }
+        
+        //outline the document
+        outliner.parse(currentEditor.document.getText());
 	}
 	
 	/**
