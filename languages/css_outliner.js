@@ -11,11 +11,11 @@
 define(function (require, exports, module) {
 	"use strict";
 	
-	var _imports = [],
-		_selectors = [];
+	var _imports,
+		_selectors;
 	
 	/**
-	 * Function clean up the import line
+	 * Clean up the import line
 	 * @param string line
 	 * @return string
 	 */
@@ -24,11 +24,40 @@ define(function (require, exports, module) {
 	}
 	
 	/**
+	 * Update the display with the list
+	 * @param array imports
+	 * @param array selectors
+	 */
+	function _updateOutline(imports, selectors) {
+		var $outline = $('div#brackets-code-outline nav'),
+			$list = $('<ul />');
+		$outline.html('');
+		
+		// add the imports
+		for (var i = 0; i < imports.length; i++) {
+			$list.append(
+				$('<li class="css-import" data-line="' + imports[i].l + '"><span>' + imports[i].i + '</span></li>')
+			);
+		}
+		for (var i = 0; i < selectors.length; i++) {
+			$list.append(
+				$('<li class="css-selector" data-line="' + selectors[i].l + '"><span>' + selectors[i].s + '</span></li>')
+			);
+		}
+		
+		$outline.append($list);
+	}
+	
+	/**
 	 * Function to parse the CSS file
 	 * @param mixed code
 	 */
 	function parse(code) {
 		code = code.split('\n');
+		
+		// empty the arrays
+		_imports = [];
+		_selectors = [];
 		
 		var selectors = true;
 		for (var line = 0; line < code.length; line++) {
@@ -72,12 +101,16 @@ define(function (require, exports, module) {
 			}
 		}
 		
+		// sort the css code
 		_imports.sort();
 		_selectors.sort(function(a,b) {
 			if (a.s < b.s) { return -1; }
 			if (a.s > b.s) { return 1; }
 			return 0;
 		});
+		
+		// update the outline display
+		_updateOutline(_imports, _selectors);
 	}
 
 	exports.parse = parse;

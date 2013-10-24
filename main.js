@@ -82,6 +82,7 @@ define(['require', 'exports', 'module', 'languages/css_outliner', 'languages/js_
 	 * update the event listeners for the extension
 	 */
 	function updateListeners() {
+		$('div#brackets-code-outline nav').delegate('li', 'click', goToLine);
 		if (enabled) {
 			$(DocumentManager).on('currentDocumentChange.bracketsCodeOutline', documentSwitch);
 			$(DocumentManager).on('workingSetRemove.bracketsCodeOutline', documentClose);
@@ -91,6 +92,19 @@ define(['require', 'exports', 'module', 'languages/css_outliner', 'languages/js_
             }
 			$(DocumentManager).off('.bracketsCodeOutline');
 			$(document).off('.bracketsCodeOutline');
+		}
+	}
+	
+	/**
+	 * Go to the clicked line in the outline
+	 * @param object event
+	 */
+	function goToLine(event) {
+		var line = $(this).data('line');
+		if (DocumentManager.getCurrentDocument()) {
+			//beginSearch(":", "");
+			var editor = EditorManager.getCurrentFullEditor();
+			editor.setCursorPos(line, 0, true);
 		}
 	}
 	
@@ -184,6 +198,8 @@ define(['require', 'exports', 'module', 'languages/css_outliner', 'languages/js_
         $('#brackets-code-outline').css({
             'background-color': editor.css('background-color'),
             'color': editor.css('color')
+		}).find('header').css({
+			'background-color': editor.css('background-color')	
 		});
 	}
 	

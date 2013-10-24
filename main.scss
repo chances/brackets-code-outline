@@ -4,25 +4,40 @@
 	top: 0;
 	right: 30px;
 	width: 250px;
-	overflow: auto;
 	background-color: #f3f3f3;
 	border: 0 solid #e5e5e5;
 	border-left-width: 1px;
 	box-sizing: border-box;
-	font-size: 100%;
+	font-size: 16px;
 	header {
         padding: 0.5em 0.75em;
         font-size: 1.5em;
         font-weight: bold;
         border-bottom: solid 1px #e5e5e5;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
     }
     nav {
-        padding: 0.5em;
+    		box-sizing: border-box;
+        padding: 0.5em 0.5em 0.5em 1em;
+        white-space: nowrap;
+        position: absolute;
+        top: 40px;
+        bottom: 0;
+        width: 250px;
+        overflow: auto;
         ul {
-            padding: 0;
-            margin: 0;
+            padding: 0 inherit;
+            margin: 0 inherit;
             li {
-                
+                padding-right: 0.5em;
+                padding: 0.125em 0.75em 0.125em 0;
+                cursor: pointer;
+                span {
+                		
+                }
             }
         }
     }
