@@ -113,7 +113,6 @@ define(['require', 'exports', 'module', 'languages/css_outliner', 'languages/js_
 		} else {
 			$('#brackets-code-outline').show();
 		}
-		console.log(currentEditor);
 		documentEdit();
 		
 		$(currentEditor.document).on('change.bracketsCodeOutline', documentEdit);
