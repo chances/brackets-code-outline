@@ -31,8 +31,9 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
         hidden = false,
         contentCssRight = 0,
         resizeInterval,
-        outliner,
-        currentType;
+        currentType = null,
+        supported = true,
+        updateInterval;
 	
 	enabled = (enabled !== undefined ? enabled : true);
 	
@@ -102,7 +103,6 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	function goToLine(event) {
 		var line = $(this).data('line');
 		if (DocumentManager.getCurrentDocument()) {
-			//beginSearch(":", "");
 			var editor = EditorManager.getCurrentFullEditor();
 			editor.setCursorPos(line, 0, true);
 		}
@@ -140,6 +140,14 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 			type = file.substr(file.lastIndexOf('.') + 1);
 		if (type && (typeof type != 'undefined') && (type != null) && (type != currentType)) {
             currentType = type;
+        }
+        
+        // make sure that the file type is supported
+        // @TODO show message instead
+        if ((typeof currentType != 'undefined') && (currentType != null) && (!outliners.supported(currentType))) {
+	        supported = false;
+	        	$('div#brackets-code-outline').find('nav').html('<p>This file type is not supported.</p>');
+	        	return;
         }
         
         //outline the document

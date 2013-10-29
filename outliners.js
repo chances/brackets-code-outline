@@ -12,6 +12,21 @@ define(function (require, exports, module) {
 	"use strict";
 	
 	var Outliners = {
+		// supported languages
+		_supported: ['css'],
+		
+		/**
+		 * Returns whether or not the given file extension is supported
+		 * @param string ext
+		 * @return bool
+		 */
+		supported: function(ext) {
+			return Outliners._supported.indexOf(ext) > -1;
+		},
+		
+		/**
+		 * CSS outliner class
+		 */
 		css: {
 			_imports: null,
 			_selectors: null,
@@ -117,5 +132,6 @@ define(function (require, exports, module) {
 		}	
 	};
 	
+	exports.supported = Outliners.supported;
 	exports.cssParse = Outliners.css.parse;
 });
