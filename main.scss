@@ -1,46 +1,50 @@
 #brackets-code-outline {
-	position: absolute;
-	height: 100%;
-	top: 0;
-	right: 30px;
-	width: 250px;
-	background-color: #f3f3f3;
-	border: 0 solid #e5e5e5;
-	border-left-width: 1px;
 	box-sizing: border-box;
-	font-size: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    background: #3C3F41;
 	header {
-        padding: 0.5em 0.75em;
-        font-size: 1.5em;
-        font-weight: bold;
-        border-bottom: solid 1px #e5e5e5;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
+        font-size: 13px;
+        position: relative;
+        height: 19px;
+        padding: 10px 0 9px 12px;
+        color: #94a3a7;
+        text-shadow: 0 -1px 0 rgba(0,0,0,0.5);
+        overflow: hidden;
     }
     nav {
-    		box-sizing: border-box;
-        padding: 0.5em;
         white-space: nowrap;
-        position: absolute;
-        top: 40px;
-        bottom: 0;
-        width: 250px;
-        overflow: auto;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-orient: vertical;
+        box-orient: vertical;
+        box-sizing: border-box;
+        height: 175px;
+        position: relative;
+        padding: 0;
+        p {
+            text-align: center;
+            -webkit-align-self: center;
+            align-self: center;
+            width: 100%;
+        }
         ul {
-            padding: 0;
+            -webkit-flex: 1;
+            flex: 1;
             margin: 0;
-            list-style: none;
+            overflow-x: hidden;
+            overflow-y: auto;
             li {
-                padding-right: 0.5em;
-                padding: 0.125em 0.75em 0.125em 1.375em;
+                line-height: 18px;
+                margin-left: 8px;
+                padding: 0 0 0 24px;
+                min-height: 18px;
+                vertical-align: baseline;
                 background-position: 0% 50%;
                 background-repeat: no-repeat;
                 list-style: none;
                 cursor: pointer;
                 span {
-                		font-size: (14em/16);
+                    height: 16px;
                 }
             }
             .css-import {

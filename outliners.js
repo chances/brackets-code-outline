@@ -13,7 +13,7 @@ define(function (require, exports, module) {
 	
 	var Outliners = {
 		// supported languages
-		_supported: ['css'],
+		_supported: ['css', 'scss'],
 		
 		/**
 		 * Returns whether or not the given file extension is supported
@@ -30,7 +30,7 @@ define(function (require, exports, module) {
 		css: {
 			_imports: null,
 			_selectors: null,
-            _selectorRegex: /\}?\/?\s*([a-zA-Z\.#][a-zA-Z\.\s\-\(\)\*\[\]\^"'$~|=,>:]*)\{/g,
+            _selectorRegex: /\}?\/?\s*([a-zA-Z\.#\-@:][a-zA-Z\.\s\-\(\)\*\[\]\#\^"'$~|=,>:]*)\{/g,
 			
 			/**
 			 * Clean up the import line
@@ -55,12 +55,12 @@ define(function (require, exports, module) {
 				// add the imports
 				for (i = 0; i < imports.length; i++) {
 					$list.append(
-						$('<li class="css-import" data-line="' + imports[i].l + '"><span>' + imports[i].i + '</span></li>')
+						$('<li class="css-import" data-line="' + imports[i].l + '" title="' + imports[i].i + '"><span>' + imports[i].i + '</span></li>')
 					);
 				}
 				for (i = 0; i < selectors.length; i++) {
 					$list.append(
-						$('<li class="css-selector" data-line="' + selectors[i].l + '"><span>' + selectors[i].s + '</span></li>')
+						$('<li class="css-selector" data-line="' + selectors[i].l + '" title="' + selectors[i].s + '"><span>' + selectors[i].s + '</span></li>')
 					);
 				}
 				
@@ -89,10 +89,10 @@ define(function (require, exports, module) {
 						if (code[line].match(/;/g).length > 1) {
 							var lines = code[line].split(';');
 							for (i = 0; i < lines.length; i++) {
-								Outliners.css._imports.push({'i': Outliners.css._cleanImport(lines[i]), 'l': (line + 1)});
+								Outliners.css._imports.push({'i': Outliners.css._cleanImport(lines[i]), 'l': line});
 							}
 						} else {
-							Outliners.css._imports.push({'i': Outliners.css._cleanImport(code[line]), 'l': (line + 1)});
+							Outliners.css._imports.push({'i': Outliners.css._cleanImport(code[line]), 'l': line});
 						}
 					} else { // find all of the selectors
                         var selector = '',
@@ -100,13 +100,13 @@ define(function (require, exports, module) {
                             selectorMatches;
                         while ((selectorMatches = Outliners.css._selectorRegex.exec(code[line])) !== null) {
                             selector = selectorMatches[1].trim();
-                            if (selector.indexOf(',').length > -1) {
+                            if (selector.indexOf(',') > -1) {
                                 selectorGroup = selector.split(',');
                                 for (i = 0; i < selectorGroup.length; i++) {
-                                    Outliners.css._selectors.push({'s': selectorGroup[i].trim(), 'l': (line + 1)});
+                                    Outliners.css._selectors.push({'s': selectorGroup[i].trim(), 'l': line});
                                 }
                             } else if (selector !== '') {
-                                Outliners.css._selectors.push({'s': selector, 'l': (line + 1)});
+                                Outliners.css._selectors.push({'s': selector, 'l': line});
                             }
                         }
 					}
@@ -117,7 +117,10 @@ define(function (require, exports, module) {
 			}
 		}
 	};
+
+    Outliners.scss = Outliners.css;
 	
 	exports.supported = Outliners.supported;
 	exports.cssParse = Outliners.css.parse;
+    exports.scssParse = Outliners.scss.parse;
 });

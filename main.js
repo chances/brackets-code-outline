@@ -31,7 +31,6 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	var currentEditor,
         enabled = preferences.get('enabled'),
         hidden = false,
-        contentCssRight = 0,
         resizeInterval,
         currentType = null,
         supported = true,
@@ -43,7 +42,6 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	function hide() {
 		if (enabled) {
 			$('#brackets-code-outline').hide();
-			$('.main-view .content').css('right', contentCssRight + 'px');
 			hidden = true;
 		}
 	}
@@ -53,7 +51,6 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	 */
 	function show() {
 		$('#brackets-code-outline').show();
-		$('.main-view .content').css('right', OUTLINE_WIDTH + contentCssRight + 'px');
 		hidden = false;
 	}
 
@@ -62,9 +59,10 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	 * @param object event
 	 */
 	function goToLine(event) {
-		var line = $(event.target).data('line');
+		var line = parseInt(event.currentTarget.dataset.line, 10);
 		if (DocumentManager.getCurrentDocument()) {
-			var editor = EditorManager.getCurrentFullEditor();
+            var editor = EditorManager.getCurrentFullEditor();
+            editor.focus();
 			editor.setCursorPos(line, 0, true);
 		}
 	}
@@ -147,12 +145,14 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	function setThemeColors() {
 		var editor = $('.CodeMirror');
 
-        $('#brackets-code-outline').css({
-            'background-color': editor.css('background-color'),
-            'color': editor.css('color')
-		}).find('header').css({
-			'background-color': editor.css('background-color')
-		});
+        if ($('#brackets-code-outline').css('background-color') !== editor.css('background-color')) {
+            $('#brackets-code-outline').css({
+                'background-color': editor.css('background-color'),
+                'color': editor.css('color')
+            }).find('header').css({
+                'background-color': editor.css('background-color')
+            });
+        }
 	}
 	
 	/**
@@ -161,17 +161,17 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	function enable() {
 		enabled = true;
 
-		contentCssRight = parseInt($('.main-view .content').css('right'), 10);
-		$('.main-view').append('<div id="brackets-code-outline"><header>Code Outline</header><nav></nav></div>');
-		$('.main-view .content').css('right', OUTLINE_WIDTH + contentCssRight + 'px');
+		$('#sidebar').append('<div id="brackets-code-outline"><header>Outline</header><nav></nav></div>');
 		updateListeners();
 		documentSwitch();
 
-		resizeInterval = setInterval(function () {
-			if ($('#brackets-code-outline').css('background-color') !== $('.CodeMirror').css('background-color')) {
-				setThemeColors();
-			}
-		}, 500);
+//        setThemeColors();
+//
+//		resizeInterval = setInterval(function () {
+//			if ($('#brackets-code-outline').css('background-color') !== $('.CodeMirror').css('background-color')) {
+//				setThemeColors();
+//			}
+//		}, 500);
 
 		preferences.set('enabled', true);
         preferences.save();
@@ -185,10 +185,9 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 		enabled = false;
 		
 		$('#brackets-code-outline').remove();
-		$('.main-view .content').css('right', contentCssRight + 'px');
 		updateListeners();
 		
-		clearInterval(resizeInterval);
+		//clearInterval(resizeInterval);
 		
 		preferences.set('enabled', false);
         preferences.save();
