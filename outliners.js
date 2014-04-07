@@ -30,6 +30,7 @@ define(function (require, exports, module) {
 		css: {
 			_imports: null,
 			_selectors: null,
+            _selectorRegex: /\}?\/?\s*([a-zA-Z\.#][a-zA-Z\.\s\-\(\)\*\[\]\^"'$~|=,>:]*)\{/g,
 			
 			/**
 			 * Clean up the import line
@@ -37,7 +38,7 @@ define(function (require, exports, module) {
 			 * @return string
 			 */
 			_cleanImport: function (line) {
-				return $.trim(line.replace('@import', '').replace(';', '').replace(/"/g, '').replace(/\'/g, '').replace('url(', '').replace(')', ''));
+				return line.replace('@import', '').replace(';', '').replace(/["\']/g, '').replace('url(', '').replace(')', '').trim();
 			},
 			
 			/**
@@ -73,8 +74,8 @@ define(function (require, exports, module) {
 			parse: function (code) {
                 var selectors = true,
                     line,
-                    lines,
                     i;
+                
 				code = code.split('\n');
 				
 				// empty the arrays
@@ -86,43 +87,31 @@ define(function (require, exports, module) {
 					if (code[line].indexOf('@import') > -1) {
 						// is there more than one import statement in this line
 						if (code[line].match(/;/g).length > 1) {
-							lines = code[line].split(';');
+							var lines = code[line].split(';');
 							for (i = 0; i < lines.length; i++) {
 								Outliners.css._imports.push({'i': Outliners.css._cleanImport(lines[i]), 'l': (line + 1)});
 							}
 						} else {
 							Outliners.css._imports.push({'i': Outliners.css._cleanImport(code[line]), 'l': (line + 1)});
 						}
-					} else if (selectors) { // find all of the selectors
-						if (code[line].indexOf(',').length > -1) {
-							lines = code[line].split(',');
-							for (i = 0; i < lines.length; i++) {
-								Outliners.css._selectors.push({'s': $.trim(lines[i]), 'l': (line + 1)});
-							}
-						} else if (code[line].indexOf('{') > -1) {
-							selectors = false;
-							var l = $.trim(code[line].replace('{', ''));
-							if (l !== '') {
-								Outliners.css._selectors.push({'s': l, 'l': (line + 1)});
-							}
-						} else if (code[line].indexOf('}') > -1) {
-							selectors = true;
-						}
-					} else {
-						if (code[line].indexOf('}') > -1) {
-							selectors = true;
-						}
+					} else { // find all of the selectors
+                        var selector = '',
+                            selectorGroup,
+                            selectorMatches;
+                        while ((selectorMatches = Outliners.css._selectorRegex.exec(code[line])) !== null) {
+                            selector = selectorMatches[1].trim();
+                            if (selector.indexOf(',').length > -1) {
+                                selectorGroup = selector.split(',');
+                                for (i = 0; i < selectorGroup.length; i++) {
+                                    Outliners.css._selectors.push({'s': selectorGroup[i].trim(), 'l': (line + 1)});
+                                }
+                            } else if (selector !== '') {
+                                Outliners.css._selectors.push({'s': selector, 'l': (line + 1)});
+                            }
+                        }
 					}
 				}
-				
-				// sort the css code
-				Outliners.css._imports.sort();
-				Outliners.css._selectors.sort(function (a, b) {
-					if (a.s < b.s) { return -1; }
-					if (a.s > b.s) { return 1; }
-					return 0;
-				});
-				
+                
 				// update the outline display
 				Outliners.css._updateOutline(Outliners.css._imports, Outliners.css._selectors);
 			}
