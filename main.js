@@ -23,20 +23,20 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	
 	ExtensionUtils.loadStyleSheet(module, 'main.css');
 	
-	var preferences = PreferencesManager.getPreferenceStorage(module, { enabled: false }),
+	var preferences = PreferencesManager.getExtensionPrefs(NAME),
 	   menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
+
+    preferences.definePreference("enabled", "boolean", false);
 	
 	var currentEditor,
-        enabled = preferences.getValue('enabled'),
+        enabled = preferences.get('enabled'),
         hidden = false,
         contentCssRight = 0,
         resizeInterval,
         currentType = null,
         supported = true,
         updateInterval;
-	
-	enabled = (enabled !== undefined ? enabled : true);
-	
+
 	/**
 	 * Hide the outline panel
 	 */
@@ -75,7 +75,8 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 			}
 		}, 500);
 		
-		preferences.setValue('enabled', true);	
+		preferences.set('enabled', true);
+        preferences.save();
 		CommandManager.get(NAME + 'showOutline').setChecked(true);
 	}
 	
@@ -175,7 +176,8 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 		
 		clearInterval(resizeInterval);
 		
-		preferences.setValue('enabled', false);	
+		preferences.set('enabled', false);
+        preferences.save();
 		CommandManager.get(NAME + 'showOutline').setChecked(false);
 	}
 	
