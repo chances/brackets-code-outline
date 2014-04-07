@@ -12,7 +12,7 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
     "use strict";
     
     var NAME = 'willsteinmetz.bracketsCodeOutline',
-	   OUTLINE_WIDTH = 250;
+        OUTLINE_WIDTH = 250;
 
 	var ExtensionUtils = brackets.getModule('utils/ExtensionUtils'),
         DocumentManager = brackets.getModule('document/DocumentManager'),
@@ -24,7 +24,7 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	ExtensionUtils.loadStyleSheet(module, 'main.css');
 	
 	var preferences = PreferencesManager.getExtensionPrefs(NAME),
-	   menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
+        menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
 
     preferences.definePreference("enabled", "boolean", false);
 	
@@ -37,7 +37,7 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
         supported = true,
         updateInterval;
 
-	/**
+    /**
 	 * Hide the outline panel
 	 */
 	function hide() {
@@ -56,60 +56,51 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 		$('.main-view .content').css('right', OUTLINE_WIDTH + contentCssRight + 'px');
 		hidden = false;
 	}
-	
-	/**
-	 * Enable the outline panel
-	 */
-	function enable() {
-		enabled = true;
-		
-		contentCssRight = parseInt($('.main-view .content').css('right'), 10);
-		$('.main-view').append('<div id="brackets-code-outline"><header>Code Outline</header><nav></nav></div>');
-		$('.main-view .content').css('right', OUTLINE_WIDTH + contentCssRight + 'px');
-		updateListeners();
-		documentSwitch();
-		
-		resizeInterval = setInterval(function() {
-			if ($('#brackets-code-outline').css('background-color') != $('.CodeMirror').css('background-color')) {
-				setThemeColors();
-			}
-		}, 500);
-		
-		preferences.set('enabled', true);
-        preferences.save();
-		CommandManager.get(NAME + 'showOutline').setChecked(true);
-	}
-	
-	/**
-	 * update the event listeners for the extension
-	 */
-	function updateListeners() {
-		$('div#brackets-code-outline nav').delegate('li', 'click', goToLine);
-		if (enabled) {
-			$(DocumentManager).on('currentDocumentChange.bracketsCodeOutline', documentSwitch);
-			$(DocumentManager).on('workingSetRemove.bracketsCodeOutline', documentClose);
-		} else {
-			if (currentEditor) {
-                $(currentEditor.document).off('.bracketsCodeOutline');
-            }
-			$(DocumentManager).off('.bracketsCodeOutline');
-			$(document).off('.bracketsCodeOutline');
-		}
-	}
-	
-	/**
+
+    /**
 	 * Go to the clicked line in the outline
 	 * @param object event
 	 */
 	function goToLine(event) {
-		var line = $(this).data('line');
+		var line = $(event.target).data('line');
 		if (DocumentManager.getCurrentDocument()) {
 			var editor = EditorManager.getCurrentFullEditor();
 			editor.setCursorPos(line, 0, true);
 		}
 	}
-	
-	/**
+
+    /**
+	 * Get the current document and set up the outliner class for use
+	 */
+	function documentEdit() {
+		var file = currentEditor.document.file.name,
+			type = file.substr(file.lastIndexOf('.') + 1);
+		if (type && (typeof type !== 'undefined') && (type !== null) && (type !== currentType)) {
+            currentType = type;
+        }
+
+        // make sure that the file type is supported
+        // @TODO show message instead
+        if ((typeof currentType !== 'undefined') && (currentType !== null) && (!outliners.supported(currentType))) {
+	        supported = false;
+            $('div#brackets-code-outline').find('nav').html('<p>This file type is not supported.</p>');
+            return;
+        }
+
+        //outline the document
+        outliners[currentType + 'Parse'](currentEditor.document.getText());
+	}
+
+    /**
+	 * handle a document being closed
+	 */
+	function documentClose() {
+		if (DocumentManager.getWorkingSet().length === 0) {
+            hide();
+        }
+	}
+
+    /**
 	 * Handle a document being swapped
 	 */
 	function documentSwitch() {
@@ -132,36 +123,59 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 		
 		$(currentEditor.document).on('change.bracketsCodeOutline', documentEdit);
 	}
-	
-	/**
-	 * Get the current document and set up the outliner class for use
+
+    /**
+	 * update the event listeners for the extension
 	 */
-	function documentEdit() {
-		var file = currentEditor.document.file.name,
-			type = file.substr(file.lastIndexOf('.') + 1);
-		if (type && (typeof type != 'undefined') && (type != null) && (type != currentType)) {
-            currentType = type;
-        }
-        
-        // make sure that the file type is supported
-        // @TODO show message instead
-        if ((typeof currentType != 'undefined') && (currentType != null) && (!outliners.supported(currentType))) {
-	        supported = false;
-	        	$('div#brackets-code-outline').find('nav').html('<p>This file type is not supported.</p>');
-	        	return;
-        }
-        
-        //outline the document
-        outliners[currentType + 'Parse'](currentEditor.document.getText());
+	function updateListeners() {
+		$('div#brackets-code-outline nav').delegate('li', 'click', goToLine);
+		if (enabled) {
+			$(DocumentManager).on('currentDocumentChange.bracketsCodeOutline', documentSwitch);
+			$(DocumentManager).on('workingSetRemove.bracketsCodeOutline', documentClose);
+		} else {
+			if (currentEditor) {
+                $(currentEditor.document).off('.bracketsCodeOutline');
+            }
+			$(DocumentManager).off('.bracketsCodeOutline');
+			$(document).off('.bracketsCodeOutline');
+		}
+	}
+
+    /**
+	 * Set the colors for the outline based on the editor's theme
+	 */
+	function setThemeColors() {
+		var editor = $('.CodeMirror');
+
+        $('#brackets-code-outline').css({
+            'background-color': editor.css('background-color'),
+            'color': editor.css('color')
+		}).find('header').css({
+			'background-color': editor.css('background-color')
+		});
 	}
 	
 	/**
-	 * handle a document being closed
+	 * Enable the outline panel
 	 */
-	function documentClose() {
-		if (DocumentManager.getWorkingSet().length == 0) {
-            hide();
-        }
+	function enable() {
+		enabled = true;
+
+		contentCssRight = parseInt($('.main-view .content').css('right'), 10);
+		$('.main-view').append('<div id="brackets-code-outline"><header>Code Outline</header><nav></nav></div>');
+		$('.main-view .content').css('right', OUTLINE_WIDTH + contentCssRight + 'px');
+		updateListeners();
+		documentSwitch();
+
+		resizeInterval = setInterval(function () {
+			if ($('#brackets-code-outline').css('background-color') !== $('.CodeMirror').css('background-color')) {
+				setThemeColors();
+			}
+		}, 500);
+
+		preferences.set('enabled', true);
+        preferences.save();
+		CommandManager.get(NAME + 'showOutline').setChecked(true);
 	}
 	
     /**
@@ -191,21 +205,7 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
             disable();
         }
 	}
-	
-	/**
-	 * Set the colors for the outline based on the editor's theme
-	 */
-	function setThemeColors() {
-		var editor = $('.CodeMirror');
-		
-        $('#brackets-code-outline').css({
-            'background-color': editor.css('background-color'),
-            'color': editor.css('color')
-		}).find('header').css({
-			'background-color': editor.css('background-color')	
-		});
-	}
-	
+
 	// add the menu item
 	CommandManager.register('Show Code Outline', NAME + 'showOutline', toggle);
 	menu.addMenuItem(NAME + 'showOutline', 'Ctrl-Alt-Shift-O');
