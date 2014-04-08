@@ -49,9 +49,8 @@ define(function (require, exports, module) {
 			 */
 			_updateOutline: function (imports, selectors) {
 				var i,
-                    $outline = $('div#brackets-code-outline nav'),
-					$list = $('<ul />');
-				$outline.html('');
+                    $list = $('#brackets-code-outline ul');
+				$list.empty();
 				
                 // TODO: Convert to templates
 				// add the imports
@@ -65,8 +64,6 @@ define(function (require, exports, module) {
 						$('<li class="css-selector" data-line="' + selectors[i].l + '" title="' + selectors[i].s + '"><span>' + selectors[i].s + '</span></li>')
 					);
 				}
-				
-				$outline.append($list);
 			},
 			
 			/**

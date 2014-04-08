@@ -28,6 +28,7 @@
             width: 100%;
         }
         ul {
+            display: none;
             -webkit-flex: 1;
             flex: 1;
             margin: 0;
@@ -54,5 +55,14 @@
             		background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABWElEQVQ4T2NkSDAQYGHnWM/IyOjAQAb4////gT8/fwQysqRb7OfmZ3GQUudkEJBgJcmoDy9+Mzy7+Z3h68c/BxhZMyz/q5jykGwIzEaQYXdOf2EAG2TiK0iSS5AV//39n+H8jg/EGZSsGs2w7ckesH4vGReGubeXolh8ZvN7wgbxsHIz7HJdxRC8P4lBlU+JIVk1iiH+SC7pBhkJ6zJ0GNUyuO0OY8jXSmPgZeFmaLnUT7xBIAOmmHdgDbu5t5eheI8or3UY1zDc/nQfrPGY11aGnJMVDOfeXibeRTCVax3nMbQCvfL591eGhTaTGay2eWO4Eq+LqOo1kGHVeoXgGMMV0CDnYXURKM2AohjkBRBblU+RoeJsC8NUiw6GQy+OM6x8sJE4r4FcYSikBw5cO3FLhi9/voADF5Yon39/SZxB5OQVuNeokmnJLUZAmfXz2z+IYoRaBRsAr77JHeU+ix4AAAAASUVORK5CYII=);
             }
         }
+    }
+}
+
+#brackets-code-outline.supported {
+    nav p {
+        display: none;
+    }
+    nav ul {
+        display: block;
     }
 }

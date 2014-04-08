@@ -1,5 +1,5 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global define, $, brackets, window */
+/*global define, $, brackets, Mustache, window */
 
 /**
  * @file main.js
@@ -8,13 +8,14 @@
  * code files. See the README for the supported file types.
  */
 
-define(['require', 'exports', 'module', 'outliners'], function (require, exports, module, outliners) {
+define(['require', 'exports', 'module', 'outliners', 'text!templates/brackets-code-outline.html'], function (require, exports, module, outliners, template) {
     "use strict";
     
     var NAME = 'willsteinmetz.bracketsCodeOutline',
         OUTLINE_WIDTH = 250;
 
-	var ExtensionUtils = brackets.getModule('utils/ExtensionUtils'),
+	var AppInit = brackets.getModule("utils/AppInit"),
+        ExtensionUtils = brackets.getModule('utils/ExtensionUtils'),
         DocumentManager = brackets.getModule('document/DocumentManager'),
         EditorManager = brackets.getModule('editor/EditorManager'),
         CommandManager = brackets.getModule('command/CommandManager'),
@@ -28,7 +29,9 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 
     preferences.definePreference("enabled", "boolean", false);
 	
-	var currentEditor,
+	var $outline = null,
+        $sidebar = null,
+        currentEditor,
         enabled = preferences.get('enabled'),
         hidden = false,
         resizeInterval,
@@ -41,7 +44,7 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	 */
 	function hide() {
 		if (enabled) {
-			$('#brackets-code-outline').hide();
+			$outline.hide();
 			hidden = true;
 		}
 	}
@@ -50,7 +53,7 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	 * Show the outline panel
 	 */
 	function show() {
-		$('#brackets-code-outline').show();
+		$outline.show();
 		hidden = false;
 	}
 
@@ -81,13 +84,14 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
         // @TODO show message instead
         if ((typeof currentType !== 'undefined') && (currentType !== null) && (!outliners.supported(currentType))) {
 	        supported = false;
-            $('div#brackets-code-outline').find('nav').html('<p>This file type is not supported.</p>');
+            $outline.removeClass('supported');
             return;
         }
 
         // TODO: Make this smarter with caching of working set and range updating
         //outline the document
         outliners[currentType + 'Parse'](currentEditor.document.getText());
+        $outline.addClass('supported');
 	}
 
     /**
@@ -113,10 +117,10 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 		
 		currentEditor = EditorManager.getCurrentFullEditor();
 		if (!currentEditor) {
-			$('#brackets-code-outline').hide();
+			hide();
 			return;
 		} else {
-			$('#brackets-code-outline').show();
+			show();
 		}
 		documentEdit();
 		
@@ -127,7 +131,7 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	 * update the event listeners for the extension
 	 */
 	function updateListeners() {
-		$('div#brackets-code-outline nav').delegate('li', 'click', goToLine);
+		$outline.find('nav').delegate('li', 'click', goToLine);
 		if (enabled) {
 			$(DocumentManager).on('currentDocumentChange.bracketsCodeOutline', documentSwitch);
 			$(DocumentManager).on('workingSetRemove.bracketsCodeOutline', documentClose);
@@ -146,8 +150,8 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	function setThemeColors() {
 		var editor = $('.CodeMirror');
 
-        if ($('#brackets-code-outline').css('background-color') !== editor.css('background-color')) {
-            $('#brackets-code-outline').css({
+        if ($outline.css('background-color') !== editor.css('background-color')) {
+            $outline.css({
                 'background-color': editor.css('background-color'),
                 'color': editor.css('color')
             }).find('header').css({
@@ -162,7 +166,7 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	function enable() {
 		enabled = true;
 
-		$('#sidebar').append('<div id="brackets-code-outline"><header>Outline</header><nav></nav></div>');
+        $outline = $(Mustache.render(template)).appendTo($('#sidebar'));
 		updateListeners();
 		documentSwitch();
 
@@ -185,7 +189,7 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	function disable() {
 		enabled = false;
 		
-		$('#brackets-code-outline').remove();
+		$outline.remove();
 		updateListeners();
 		
 		//clearInterval(resizeInterval);
@@ -210,10 +214,14 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 	CommandManager.register('Show Code Outline', NAME + 'showOutline', toggle);
 	menu.addMenuItem(NAME + 'showOutline', 'Ctrl-Alt-Shift-O');
 	
-	if (enabled) {
-        enable();
-    }
-	if (DocumentManager.getWorkingSet().length === 0) {
-        hide();
-    }
+    AppInit.appReady(function () {
+        $sidebar = $('#sidebar');
+
+        if (enabled) {
+            enable();
+        }
+        if (DocumentManager.getWorkingSet().length === 0) {
+            hide();
+        }
+    });
 });
