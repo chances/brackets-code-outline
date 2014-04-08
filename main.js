@@ -62,11 +62,12 @@ define(['require', 'exports', 'module', 'outliners', 'text!templates/brackets-co
 	 * @param object event
 	 */
 	function goToLine(event) {
-		var line = parseInt(event.currentTarget.dataset.line, 10);
+		var line = parseInt(event.currentTarget.dataset.line, 10),
+            ch = parseInt(event.currentTarget.dataset.ch, 10);
 		if (DocumentManager.getCurrentDocument()) {
             var editor = EditorManager.getCurrentFullEditor();
             editor.focus();
-			editor.setCursorPos(line, 0, true);
+			editor.setCursorPos(line, ch, true);
 		}
 	}
 
