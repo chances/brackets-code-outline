@@ -30,7 +30,8 @@ define(function (require, exports, module) {
 		css: {
 			_imports: null,
 			_selectors: null,
-            _selectorRegex: /\}?\/?\s*([a-zA-Z\.#\-@:][a-zA-Z\.\s\-\(\)\*\[\]\#\^"'$~|=,>:]*)\{/g,
+            // FIXME: This doesn't work for multiline comma seperated selectors
+            _selectorRegex: /\}?\/?\s*([a-zA-Z0-9\.#\-@:][a-zA-Z\.\s\-\(\)\*\[\]\#\^"'$~|=,>:]*)\{/g,
 			
 			/**
 			 * Clean up the import line
@@ -52,6 +53,7 @@ define(function (require, exports, module) {
 					$list = $('<ul />');
 				$outline.html('');
 				
+                // TODO: Convert to templates
 				// add the imports
 				for (i = 0; i < imports.length; i++) {
 					$list.append(
@@ -118,6 +120,7 @@ define(function (require, exports, module) {
 		}
 	};
 
+    // TODO: Make this work with nested selectors
     Outliners.scss = Outliners.css;
 	
 	exports.supported = Outliners.supported;

@@ -45,7 +45,7 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
 			hidden = true;
 		}
 	}
-	
+
 	/*
 	 * Show the outline panel
 	 */
@@ -85,6 +85,7 @@ define(['require', 'exports', 'module', 'outliners'], function (require, exports
             return;
         }
 
+        // TODO: Make this smarter with caching of working set and range updating
         //outline the document
         outliners[currentType + 'Parse'](currentEditor.document.getText());
 	}
