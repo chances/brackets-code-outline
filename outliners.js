@@ -1,5 +1,5 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global define, $, brackets, window */
+/*global define, $, brackets, Mustache, window */
 
 /**
  * @file outliners.js
@@ -10,7 +10,9 @@
 
 define(function (require, exports, module) {
 	"use strict";
-	
+
+	var itemTemplate = require('text!templates/outline-list-item.html');
+
 	var Outliners = {
 		// supported languages
 		_supported: ['css', 'scss'],
@@ -49,20 +51,28 @@ define(function (require, exports, module) {
 			 */
 			_updateOutline: function (imports, selectors) {
 				var i,
-                    $list = $('#brackets-code-outline ul');
+                    $list = $('#brackets-code-outline ul'),
+                    templateData;
 				$list.empty();
-				
-                // TODO: Convert to templates
+
 				// add the imports
 				for (i = 0; i < imports.length; i++) {
-					$list.append(
-						$('<li class="css-import" data-line="' + imports[i].l + '" title="' + imports[i].i + '"><span>' + imports[i].i + '</span></li>')
-					);
+                    templateData = {
+                        itemClass: 'css-import',
+                        line: imports[i].l,
+                        title: imports[i].i,
+                        label: imports[i].i
+                    };
+					$list.append(Mustache.render(itemTemplate, templateData));
 				}
 				for (i = 0; i < selectors.length; i++) {
-					$list.append(
-						$('<li class="css-selector" data-line="' + selectors[i].l + '" title="' + selectors[i].s + '"><span>' + selectors[i].s + '</span></li>')
-					);
+                    templateData = {
+                        itemClass: 'css-selector',
+                        line: selectors[i].l,
+                        title: selectors[i].s,
+                        label: selectors[i].s
+                    };
+					$list.append(Mustache.render(itemTemplate, templateData));
 				}
 			},
 			
