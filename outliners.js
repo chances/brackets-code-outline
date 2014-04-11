@@ -4,6 +4,7 @@
 /**
  * @file outliners.js
  * @author Will Steinmetz
+ * @author Chance Snow
  * This file contains the different code outliners for
  * supported languages
  */
@@ -23,7 +24,7 @@ define(function (require, exports, module) {
 		/**
 		 * Returns whether or not the given file extension is supported
 		 * @param string ext
-		 * @return bool
+		 * @return boolean
 		 */
 		supported: function (ext) {
 			return Outliners._supported.indexOf(ext) > -1;
@@ -67,6 +68,11 @@ define(function (require, exports, module) {
                 });
 			},
 
+            /**
+			 * Add a HTML node to the element list
+			 * @param SimpleNode node Node to add to outline
+             * @param number level Node scope level
+			 */
             _addNode: function (node, level) {
                 var label,
                     id = '',
@@ -74,7 +80,7 @@ define(function (require, exports, module) {
                     i;
                 if (node !== null && node.isElement()) {
                     label = node.tag;
-                    // format IDsand class lists
+                    // format IDs and class lists
                     if (node.attributes.id) {
                         label += '#' + node.attributes.id;
                     }
@@ -104,6 +110,10 @@ define(function (require, exports, module) {
                 }
             },
 
+            /**
+			 * Parse the HTML file
+			 * @param mixed code
+			 */
             parse: function (code) {
                 var dom = HTMLSimpleDOM.build(code, false),
                     i,
@@ -168,7 +178,7 @@ define(function (require, exports, module) {
 			},
 			
 			/**
-			 * Function to parse the CSS file
+			 * Parse the CSS file
 			 * @param mixed code
 			 */
 			parse: function (code) {

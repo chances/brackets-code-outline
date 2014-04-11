@@ -4,7 +4,8 @@
 /**
 * @file main.js
 * @author Will Steinmetz
-* This extension adds a panel to the right side of Brackets to outline particular
+* @author Chance Snow
+* This extension adds a panel to the left side of Brackets to outline particular
 * code files. See the README for the supported file types.
 */
 
@@ -96,7 +97,7 @@ define(['require', 'exports', 'module', 'outliners', 'text!templates/brackets-co
     }
 
     /**
-    * handle a document being closed
+    * Handle a document being closed
     */
     function documentClose() {
         if (DocumentManager.getWorkingSet().length === 0) {
