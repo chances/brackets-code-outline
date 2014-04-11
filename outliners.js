@@ -1,5 +1,5 @@
-/*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global define, $, brackets, Mustache, window */
+/*jslint vars: true, plusplus: true, devel: true, browser: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
+/*global define, $, brackets, Mustache */
 
 /**
  * @file outliners.js
@@ -117,7 +117,7 @@ define(function (require, exports, module) {
                 Outliners.html._updateOutline(Outliners.html._elements);
             }
         },
-		
+
 		/**
 		 * CSS outliner class
 		 */
