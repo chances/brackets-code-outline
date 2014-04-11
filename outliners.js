@@ -51,7 +51,6 @@ define(function (require, exports, module) {
                         itemClass: 'html-element',
                         line: elements[i].l,
                         ch: elements[i].ch,
-                        hasLevel: true,
                         level: elements[i].level,
                         label: elements[i].label
                     };
@@ -161,6 +160,7 @@ define(function (require, exports, module) {
                         itemClass: 'css-selector',
                         line: selectors[i].l,
                         ch: selectors[i].ch,
+                        level: 0,
                         label: selectors[i].s
                     };
 					$list.append(Mustache.render(itemTemplate, templateData));
